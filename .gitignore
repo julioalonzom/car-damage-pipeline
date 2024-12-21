@@ -169,3 +169,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# stuff I added
+notebooks/
+models/
+# Project specific
+logs/
+*.log
+.env.local
+models/

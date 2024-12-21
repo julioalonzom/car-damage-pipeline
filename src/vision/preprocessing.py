@@ -1,4 +1,4 @@
-from PIL image Image
+from PIL import Image
 import torch
 from torchvision import transforms
 from typing import Tuple

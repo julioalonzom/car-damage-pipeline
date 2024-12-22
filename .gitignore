@@ -173,8 +173,33 @@ cython_debug/
 # stuff I added
 notebooks/
 models/
+
 # Project specific
+checkpoints/
+model_outputs/
+data/raw/
+data/processed/
+wandb/
+*.pt
+*.onnx
+*.hdf5
+tmp/
 logs/
-*.log
-.env.local
-models/
+.env
+.DS_Store
+
+# Model checkpoints and artifacts
+src/models/*.pth
+src/models/*.pt
+src/models/*.bin
+
+# IDE
+.vscode/
+.idea/
+
+# API documentation
+api-docs/
+
+# Test coverage
+coverage/
+htmlcov/

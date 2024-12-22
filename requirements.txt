@@ -26,3 +26,7 @@ python-dotenv>=1.0.0
 # Type checking
 mypy>=1.7.0
 types-Pillow>=10.1.0
+
+fastapi
+uvicorn
+python-multipart  # for file uploads

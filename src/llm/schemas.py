@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Dict, Optional
 from decimal import Decimal
+from src.vision.schemas import CarPart
 
 class DamageReport(BaseModel):
     """Structured damage report from LLM."""
@@ -11,7 +12,6 @@ class DamageReport(BaseModel):
     severity_assessment: Optional[str] = None
 
 class ReportRequest(BaseModel):
-    """Input for report generation."""
-    damage_predictions: Dict[str, float]
+    part_damages: Dict[CarPart, float]  # Updated to use part damages
     cost_estimate: Decimal
     image_location: Optional[str] = None

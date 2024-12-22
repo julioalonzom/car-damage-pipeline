@@ -1,3 +1,4 @@
+# src/llm/generator.py
 from typing import Dict
 from decimal import Decimal
 import json

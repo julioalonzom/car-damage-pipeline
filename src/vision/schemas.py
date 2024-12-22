@@ -1,19 +1,17 @@
-from pydantic import BaseModel
-from typing import Dict, Optional
+# src/vision/schemas.py
 from enum import Enum
+from typing import Dict, Optional
+from pydantic import BaseModel
 
-class DamageType(str, Enum):
-    SCRATCH = "scratch"
-    DENT = "dent"
-    BROKEN_BUMPER = "broken_bumper"
-    GLASS_SHATTER = "glass_shatter"
-    PAINT_DAMAGE = "paint_damage"
-
-class DamagePrediction(BaseModel):
-    damage_type: DamageType
-    confidence: float
-    location: Optional[str] = None
+class CarPart(str, Enum):
+    HEADLAMP = "headlamp"
+    REAR_BUMPER = "rear_bumper"
+    DOOR = "door"
+    HOOD = "hood"
+    FRONT_BUMPER = "front_bumper"
 
 class DamageAnalysis(BaseModel):
-    predictions: Dict[str, float]
-    primary_damage: DamageType
+    """Multi-label damage predictions per part"""
+    part_damages: Dict[CarPart, float]
+    most_damaged_part: CarPart
+    max_confidence: float

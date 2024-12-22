@@ -11,8 +11,13 @@ class Settings(BaseSettings):
     # OpenAI
     OPENAI_API_KEY: str
 
-    # Model Settings
-    VISION_MODEL_NAME: str = "google/vit-base-patch16-224"
+    # Model paths
+    MODEL_CHECKPOINT_PATH: str = "checkpoints/best_model_refined.pt"
+    BASE_MODEL_NAME: str = "google/vit-base-patch16-224"
+
+    # Model inference settings
+    USE_TTA: bool = True
+    CONFIDENCE_THRESHOLD: float = 0.3
 
     # Logging
     LOG_LEVEL: str = "INFO"

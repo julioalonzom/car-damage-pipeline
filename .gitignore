@@ -187,11 +187,10 @@ tmp/
 logs/
 .env
 .DS_Store
+data/
 
 # Model checkpoints and artifacts
-src/models/*.pth
-src/models/*.pt
-src/models/*.bin
+checkpoints/
 
 # IDE
 .vscode/

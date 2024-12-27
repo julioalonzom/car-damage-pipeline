@@ -4,6 +4,8 @@ from typing import Dict, Optional
 import json
 from pathlib import Path
 
+from src.utils.metrics import log_performance
+from src.vision.schemas import CarPart
 from src.cost.schemas import RepairCost
 from src.utils.logger import get_logger
 from src.config import get_settings
@@ -32,6 +34,7 @@ class CostEstimator:
                     for k, v in config["base_costs"].items()
                 })
 
+    @log_performance("Cost Estimator")
     def estimate(self, part_damages: Dict[CarPart, float]) -> RepairCost:
         """
         Estimate repair costs based on damaged parts and confidence.
@@ -42,19 +45,31 @@ class CostEstimator:
         try:
             cost_breakdown = {}
             total_cost = Decimal("0.00")
+            TWOPLACES = Decimal('0.01')
+            
+            # Calculate confidence score first
+            confidence_score = sum(part_damages.values()) / len(part_damages)
             
             for part, confidence in part_damages.items():
-                if confidence > 0.3:  # Confidence threshold
+                if confidence > 0.3:
                     base_cost = self.base_costs[part]
-                    # Adjust cost based on confidence
-                    adjusted_cost = base_cost * Decimal(str(confidence))
+                    adjusted_cost = (base_cost * Decimal(str(confidence))).quantize(TWOPLACES)
                     cost_breakdown[part] = adjusted_cost
                     total_cost += adjusted_cost
+            
+            total_cost = total_cost.quantize(TWOPLACES)
+            
+            logger.info(
+                f"Cost Metrics | "
+                f"Total Cost: ${total_cost:.2f} | "
+                f"Parts Assessed: {len(cost_breakdown)} | "
+                f"Average Confidence: {confidence_score:.2f}"
+            )
             
             return RepairCost(
                 total_cost=total_cost,
                 breakdown=cost_breakdown,
-                confidence_score=sum(part_damages.values()) / len(part_damages)
+                confidence_score=confidence_score
             )
             
         except Exception as e:

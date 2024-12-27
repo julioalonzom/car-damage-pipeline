@@ -1,6 +1,7 @@
 # src/vision/model.py
 import torch
 import torch.nn.functional as F
+import time
 from pathlib import Path
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 from PIL import Image
@@ -10,6 +11,7 @@ from src.vision.preprocessing import ImagePreprocessor
 from src.vision.schemas import DamageAnalysis, CarPart
 from src.vision.inference import TTAInference
 from src.utils.logger import get_logger
+from src.utils.metrics import log_performance
 
 logger = get_logger(__name__)
 
@@ -53,7 +55,8 @@ class DamageClassifier:
         self.model = AutoModelForImageClassification.from_pretrained(
             model_name,
             num_labels=5,  # Number of car parts we can detect
-            problem_type="multi_label_classification"
+            problem_type="multi_label_classification",
+            ignore_mismatched_sizes=True
         )
 
         # Load fine-tuned weights if provided
@@ -79,6 +82,7 @@ class DamageClassifier:
             4: CarPart.FRONT_BUMPER
         }
 
+    @log_performance("Vision Model")
     @torch.no_grad()
     def classify(self, image: Image.Image) -> DamageAnalysis:
         """
@@ -91,6 +95,7 @@ class DamageClassifier:
             DamageAnalysis containing predictions and confidence scores
         """
         try:
+            inference_start = time.perf_counter()
             # Preprocess image
             inputs = self.preprocessor.preprocess(image)
             inputs = inputs.to(self.device)
@@ -125,6 +130,13 @@ class DamageClassifier:
             most_damaged_part = self.id2label[most_damaged_idx]
             max_confidence = float(final_probs[0][most_damaged_idx])
 
+            inference_time = time.perf_counter() - inference_start
+            logger.info(
+                f"Vision Metrics | "
+                f"Confidence Scores: {part_damages} | "
+                f"Inference Time: {inference_time:.3f}s | "
+                f"TTA Enabled: {self.use_tta}"
+            )
             return DamageAnalysis(
                 part_damages=part_damages,
                 most_damaged_part=most_damaged_part,
